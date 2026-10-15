@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useClock } from "@/lib/meridian/use-clock";
 import { useMeridianStore } from "@/lib/meridian/store";
-import { useSpotifyEmbed, spotifyPlaylistUri } from "@/lib/meridian/use-spotify-embed";
+import { useYoutubeEmbed } from "@/lib/meridian/use-youtube-embed";
 import { SEGMENTS, getSegmentIndexForHour, formatClock, combinedGenres } from "@/lib/meridian/segments";
 import { CITY_OPTIONS } from "@/lib/meridian/timezones";
 import { Background } from "./Background";
@@ -41,18 +41,18 @@ export function MeridianExperience() {
   const genreIndex = (genreIndexBySegment[segment.id] ?? 0) % genres.length;
   const genre = genres[genreIndex];
 
-  const [initialUri] = useState(() =>
-    spotifyPlaylistUri(SEGMENTS[getSegmentIndexForHour(liveHour)].genres[0].playlistId),
+  const [initialVideoId] = useState(
+    () => SEGMENTS[getSegmentIndexForHour(liveHour)].genres[0].videoId,
   );
-  const { mountRef, ready, isPlaying, apiUnavailable, loadUri, togglePlay } = useSpotifyEmbed(initialUri);
+  const { mountRef, ready, isPlaying, apiUnavailable, loadVideo, togglePlay } =
+    useYoutubeEmbed(initialVideoId);
 
-  const loadedUriRef = useRef(initialUri);
+  const loadedVideoRef = useRef(initialVideoId);
   useEffect(() => {
-    const uri = spotifyPlaylistUri(genre.playlistId);
-    if (!ready || uri === loadedUriRef.current) return;
-    loadedUriRef.current = uri;
-    loadUri(uri);
-  }, [genre.playlistId, ready, loadUri]);
+    if (!ready || genre.videoId === loadedVideoRef.current) return;
+    loadedVideoRef.current = genre.videoId;
+    loadVideo(genre.videoId);
+  }, [genre.videoId, ready, loadVideo]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {

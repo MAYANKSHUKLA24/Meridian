@@ -1,7 +1,7 @@
 "use client";
 
 import type { RefObject } from "react";
-import type { Genre, Segment } from "@/lib/meridian/segments";
+import { youtubeThumbnail, youtubeWatchUrl, type Genre, type Segment } from "@/lib/meridian/segments";
 
 export function RadioPlayer({
   segment,
@@ -25,12 +25,18 @@ export function RadioPlayer({
   onNextGenre: () => void;
 }) {
   return (
-    <div className="w-full max-w-sm rounded-[28px] bg-black/35 backdrop-blur-xl ring-1 ring-white/15 px-4 py-3.5 shadow-2xl shadow-black/40">
+    <div className="relative w-full max-w-sm rounded-[28px] bg-black/35 backdrop-blur-xl ring-1 ring-white/15 px-4 py-3.5 shadow-2xl shadow-black/40">
+      {/* Headless YouTube player — drives real, full-length playback. No login
+          gate like Spotify's embed, so it can stay fully hidden; our pill is the UI. */}
+      <div className="absolute h-px w-px overflow-hidden opacity-0 pointer-events-none">
+        <div ref={mountRef} />
+      </div>
+
       <div className="flex items-center gap-3">
         <div className="relative shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={genre.art}
+            src={youtubeThumbnail(genre.videoId)}
             alt=""
             className="h-12 w-12 rounded-full object-cover ring-1 ring-white/20"
           />
@@ -82,32 +88,16 @@ export function RadioPlayer({
         </div>
       </div>
 
-      {/* Real Spotify widget — this is what actually plays audio, and it's where
-          you log into Spotify to unlock full tracks instead of ~15s previews. */}
-      <div className="mt-3 overflow-hidden rounded-2xl bg-white/5">
-        <div ref={mountRef} />
-        {!ready && !apiUnavailable && (
-          <div className="flex h-[152px] items-center justify-center text-xs font-mono text-white/40">
-            loading player…
-          </div>
-        )}
-      </div>
-
-      <p className="mt-2 text-center text-[10px] leading-snug text-white/35">
-        Spotify gives short previews unless you&apos;re signed in — log in above (free account works)
-        for full-length tracks.
-      </p>
-
       {apiUnavailable && (
         <p className="mt-2 text-center text-[11px] text-white/50">
           Player unavailable —{" "}
           <a
             className="underline hover:text-white"
-            href={`https://open.spotify.com/playlist/${genre.playlistId}`}
+            href={youtubeWatchUrl(genre.videoId)}
             target="_blank"
             rel="noopener noreferrer"
           >
-            open &ldquo;{genre.name}&rdquo; on Spotify
+            open &ldquo;{genre.name}&rdquo; on YouTube
           </a>
         </p>
       )}
