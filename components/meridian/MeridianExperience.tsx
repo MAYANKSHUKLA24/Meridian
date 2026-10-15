@@ -44,8 +44,7 @@ export function MeridianExperience() {
   const [initialUri] = useState(() =>
     spotifyPlaylistUri(SEGMENTS[getSegmentIndexForHour(liveHour)].genres[0].playlistId),
   );
-  const { mountRef, ready, isPlaying, apiUnavailable, positionMs, durationMs, loadUri, togglePlay } =
-    useSpotifyEmbed(initialUri);
+  const { mountRef, ready, isPlaying, apiUnavailable, loadUri, togglePlay } = useSpotifyEmbed(initialUri);
 
   const loadedUriRef = useRef(initialUri);
   useEffect(() => {
@@ -124,8 +123,6 @@ export function MeridianExperience() {
             ready={ready}
             isPlaying={isPlaying}
             apiUnavailable={apiUnavailable}
-            positionMs={positionMs}
-            durationMs={durationMs}
             onTogglePlay={togglePlay}
             onPrevGenre={handlePrevGenre}
             onNextGenre={handleNextGenre}

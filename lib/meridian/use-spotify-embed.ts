@@ -2,9 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type PlaybackUpdateEvent = {
-  data?: { isPaused?: boolean; isBuffering?: boolean; position?: number; duration?: number };
-};
+type PlaybackUpdateEvent = { data?: { isPaused?: boolean } };
 
 type EmbedController = {
   loadUri: (uri: string) => void;
@@ -73,8 +71,6 @@ export function useSpotifyEmbed(initialUri: string, embedHeight: number = 152) {
   const [ready, setReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [apiUnavailable, setApiUnavailable] = useState(false);
-  const [positionMs, setPositionMs] = useState(0);
-  const [durationMs, setDurationMs] = useState(0);
 
   useEffect(() => {
     let destroyed = false;
@@ -93,8 +89,6 @@ export function useSpotifyEmbed(initialUri: string, embedHeight: number = 152) {
           controllerRef.current = controller;
           controller.addListener("playback_update", (e) => {
             setIsPlaying(!e?.data?.isPaused);
-            if (typeof e?.data?.position === "number") setPositionMs(e.data.position);
-            if (typeof e?.data?.duration === "number") setDurationMs(e.data.duration);
           });
           setReady(true);
         },
@@ -111,15 +105,18 @@ export function useSpotifyEmbed(initialUri: string, embedHeight: number = 152) {
   }, []);
 
   const loadUri = useCallback((uri: string) => {
-    controllerRef.current?.loadUri(uri);
+    const controller = controllerRef.current;
+    if (!controller) return;
+    controller.loadUri(uri);
+    // loadUri() doesn't reliably resume playback on its own — force it so
+    // switching genres always starts audio immediately instead of loading paused.
+    controller.play();
     setIsPlaying(true);
-    setPositionMs(0);
-    setDurationMs(0);
   }, []);
 
   const togglePlay = useCallback(() => {
     controllerRef.current?.togglePlay();
   }, []);
 
-  return { mountRef, ready, isPlaying, apiUnavailable, positionMs, durationMs, loadUri, togglePlay };
+  return { mountRef, ready, isPlaying, apiUnavailable, loadUri, togglePlay };
 }

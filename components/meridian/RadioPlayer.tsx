@@ -3,14 +3,6 @@
 import type { RefObject } from "react";
 import type { Genre, Segment } from "@/lib/meridian/segments";
 
-function formatTime(ms: number): string {
-  if (!ms || !Number.isFinite(ms)) return "0:00";
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-}
-
 export function RadioPlayer({
   segment,
   genre,
@@ -18,8 +10,6 @@ export function RadioPlayer({
   ready,
   isPlaying,
   apiUnavailable,
-  positionMs,
-  durationMs,
   onTogglePlay,
   onPrevGenre,
   onNextGenre,
@@ -30,21 +20,12 @@ export function RadioPlayer({
   ready: boolean;
   isPlaying: boolean;
   apiUnavailable: boolean;
-  positionMs: number;
-  durationMs: number;
   onTogglePlay: () => void;
   onPrevGenre: () => void;
   onNextGenre: () => void;
 }) {
-  const progress = durationMs > 0 ? Math.min(1, positionMs / durationMs) : 0;
-
   return (
-    <div className="relative w-full max-w-sm rounded-[28px] bg-black/35 backdrop-blur-xl ring-1 ring-white/15 px-4 py-3.5 shadow-2xl shadow-black/40">
-      {/* Headless Spotify embed — drives real playback, visually hidden. Our own pill is the UI. */}
-      <div className="absolute h-px w-px overflow-hidden opacity-0 pointer-events-none">
-        <div ref={mountRef} />
-      </div>
-
+    <div className="w-full max-w-sm rounded-[28px] bg-black/35 backdrop-blur-xl ring-1 ring-white/15 px-4 py-3.5 shadow-2xl shadow-black/40">
       <div className="flex items-center gap-3">
         <div className="relative shrink-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -101,15 +82,21 @@ export function RadioPlayer({
         </div>
       </div>
 
-      <div className="mt-3 flex items-center gap-2">
-        <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/10">
-          <div
-            className="h-full rounded-full transition-[width] duration-1000 ease-linear"
-            style={{ width: `${progress * 100}%`, backgroundColor: segment.accent }}
-          />
-        </div>
-        <span className="font-mono text-[10px] tabular-nums text-white/40">{formatTime(positionMs)}</span>
+      {/* Real Spotify widget — this is what actually plays audio, and it's where
+          you log into Spotify to unlock full tracks instead of ~15s previews. */}
+      <div className="mt-3 overflow-hidden rounded-2xl bg-white/5">
+        <div ref={mountRef} />
+        {!ready && !apiUnavailable && (
+          <div className="flex h-[152px] items-center justify-center text-xs font-mono text-white/40">
+            loading player…
+          </div>
+        )}
       </div>
+
+      <p className="mt-2 text-center text-[10px] leading-snug text-white/35">
+        Spotify gives short previews unless you&apos;re signed in — log in above (free account works)
+        for full-length tracks.
+      </p>
 
       {apiUnavailable && (
         <p className="mt-2 text-center text-[11px] text-white/50">

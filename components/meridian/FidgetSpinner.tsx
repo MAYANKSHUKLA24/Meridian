@@ -96,11 +96,12 @@ export function FidgetSpinner({ accent, glow }: { accent: string; glow: string }
     return (
       <button
         onClick={toggle}
-        className="fixed bottom-6 right-6 z-40 h-11 w-11 rounded-full bg-black/40 backdrop-blur-xl ring-1 ring-white/15 text-lg shadow-xl hover:bg-black/55"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-black/40 backdrop-blur-xl ring-1 ring-white/15 pl-3 pr-4 py-2 shadow-xl hover:bg-black/55"
         aria-label="Open fidget spinner"
         title="Fidget spinner (H)"
       >
-        🌀
+        <span className="text-lg meridian-float">🌀</span>
+        <span className="text-xs font-medium text-white/80">fidget spinner</span>
       </button>
     );
   }
