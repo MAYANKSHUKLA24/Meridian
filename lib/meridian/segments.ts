@@ -3,8 +3,12 @@ export type ParticleType = "birds" | "bokeh" | "embers" | "haze" | "neon" | "sta
 export type Genre = {
   id: string;
   name: string;
-  /** YouTube video ID — a long-running mix or 24/7 livestream that loops indefinitely. */
-  videoId: string;
+  /** Multi-track YouTube/YT Music playlist ID — used when present. */
+  playlistId?: string;
+  /** Single video/livestream ID — used when there's no playlistId (e.g. a 24/7 stream, which is never the same twice anyway). */
+  videoId?: string;
+  /** A representative video, for album-art purposes. */
+  thumbVideoId: string;
   bpm: string;
   blurb: string;
 };
@@ -13,8 +17,10 @@ export function youtubeThumbnail(videoId: string): string {
   return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 }
 
-export function youtubeWatchUrl(videoId: string): string {
-  return `https://www.youtube.com/watch?v=${videoId}`;
+export function youtubeOpenUrl(genre: Genre): string {
+  return genre.playlistId
+    ? `https://www.youtube.com/playlist?list=${genre.playlistId}`
+    : `https://www.youtube.com/watch?v=${genre.videoId}`;
 }
 
 export type Segment = {
@@ -41,15 +47,17 @@ export type Segment = {
 export const ANYTIME_GENRES: Genre[] = [
   {
     id: "this-is-fred-again",
-    name: "Fred again.. (Full Set)",
-    videoId: "RX1cVJt6Gik",
+    name: "Fred again.. — ten days",
+    playlistId: "OLAK5uy_mYP0be8Irj7IhYUnmlcIkhBqtUWPimrbY",
+    thumbVideoId: "sKXIVjxkAnc",
     bpm: "120–130 BPM",
-    blurb: "EDM house, Fred again.. live at Terminal 5 — any hour",
+    blurb: "his full 2024 album, official release — any hour",
   },
   {
     id: "organic-house-mix",
-    name: "Organic House Mix",
-    videoId: "Ujwa2XCzd8g",
+    name: "Melodic House",
+    playlistId: "PLGoJH6fg6o0kTr9rp_z7e0y5Ut3ht3J8N",
+    thumbVideoId: "Ujwa2XCzd8g",
     bpm: "110–122 BPM",
     blurb: "RÜFÜS DU SOL / Ben Böhmer / Lane 8 territory — zone-in music",
   },
@@ -74,14 +82,16 @@ export const SEGMENTS: Segment[] = [
       {
         id: "peaceful-piano",
         name: "Peaceful Piano",
-        videoId: "l6J0ylYTO4s",
+        playlistId: "PLUw7Nsql2TwR45Tjcdwm_6y34jmD8bK-f",
+        thumbVideoId: "l6J0ylYTO4s",
         bpm: "60–80 BPM",
         blurb: "solo piano, gentle and unhurried",
       },
       {
         id: "chill-hits",
-        name: "Blissful Morning",
-        videoId: "zGcYx7TJ5lI",
+        name: "Pure Ambient",
+        playlistId: "PLd3viYfX9UkkXNjz-bxSIq4NBC3ECIk58",
+        thumbVideoId: "zGcYx7TJ5lI",
         bpm: "70–95 BPM",
         blurb: "soft and positive, easing you in",
       },
@@ -89,8 +99,9 @@ export const SEGMENTS: Segment[] = [
         id: "lofi-beats",
         name: "lofi beats",
         videoId: "jfKfPfyJRdk",
+        thumbVideoId: "jfKfPfyJRdk",
         bpm: "70–90 BPM",
-        blurb: "dusty, warm, half-asleep house",
+        blurb: "dusty, warm, half-asleep house — live 24/7",
       },
     ],
   },
@@ -107,22 +118,25 @@ export const SEGMENTS: Segment[] = [
     genres: [
       {
         id: "indie-top-50",
-        name: "Indie Folk Radio",
-        videoId: "c6JAn-IGX6o",
+        name: "Acoustic Chill",
+        videoId: "XFpwi6O8d6k",
+        thumbVideoId: "c6JAn-IGX6o",
         bpm: "95–120 BPM",
-        blurb: "gentle indie folk, bright and clear",
+        blurb: "soft indie folk, 50 tracks back to back",
       },
       {
         id: "feel-good-friday",
-        name: "Feel Good Friday",
-        videoId: "g2dqc7WlFbg",
+        name: "Feel-good Morning Pop",
+        playlistId: "RDCLAK5uy_kskrFUGb5Tnz3-x4wyK9Q5j8RgfwQvq4k",
+        thumbVideoId: "g2dqc7WlFbg",
         bpm: "100–125 BPM",
         blurb: "upbeat but easy, built for momentum",
       },
       {
         id: "deep-house-relax",
-        name: "Deep House Relax",
-        videoId: "Ihm9OQWmibA",
+        name: "Deep House Pure",
+        playlistId: "RDCLAK5uy_mVvnZOzJPD1C1SqIu44Hwl9AT00fafKNs",
+        thumbVideoId: "Ihm9OQWmibA",
         bpm: "100–118 BPM",
         blurb: "soft house, rolling and unhurried",
       },
@@ -142,28 +156,32 @@ export const SEGMENTS: Segment[] = [
       {
         id: "todays-top-hits",
         name: "Today's Top Hits",
-        videoId: "dSumoJlI1bc",
+        playlistId: "PL1h8do6DyqVOYJtNo7mGSeSXM9SAeBfj-",
+        thumbVideoId: "dSumoJlI1bc",
         bpm: "110–130 BPM",
         blurb: "the biggest pop and pop-rock right now",
       },
       {
         id: "mint",
-        name: "Tropical House Radio",
-        videoId: "2B4x-tQGH88",
+        name: "Tropical House Summer",
+        playlistId: "PLaq_6rg1_jQVq07KqXc-89KKKLhfFl_tZ",
+        thumbVideoId: "2B4x-tQGH88",
         bpm: "120–140 BPM",
         blurb: "upbeat electronic, dance-floor ready",
       },
       {
         id: "beast-mode",
         name: "Beast Mode",
-        videoId: "LDHVtmNdsPk",
+        playlistId: "PLe8RKAkuBycf6omjcvlulnV_aAhkt-0L4",
+        thumbVideoId: "LDHVtmNdsPk",
         bpm: "130–150 BPM",
         blurb: "trap and EDM, maximum drive",
       },
       {
         id: "get-turnt",
         name: "Get Turnt",
-        videoId: "mIwLUsZ32QQ",
+        playlistId: "PLLarIMbA4Rzawuy3-9ZJzieNEB2aItvYd",
+        thumbVideoId: "mIwLUsZ32QQ",
         bpm: "125–145 BPM",
         blurb: "hard-hitting trap and hip-hop energy",
       },
@@ -182,22 +200,25 @@ export const SEGMENTS: Segment[] = [
     genres: [
       {
         id: "jazz-classics",
-        name: "Jazz Classics",
-        videoId: "ovEwMim9Hks",
+        name: "100 Jazz Classics",
+        playlistId: "OLAK5uy_mYyEx_ga6vJnKnI_-NiRdagecjl8OFLxs",
+        thumbVideoId: "ovEwMim9Hks",
         bpm: "70–100 BPM",
         blurb: "timeless jazz, warm and unhurried",
       },
       {
         id: "rnb-x",
-        name: "RNB X",
-        videoId: "SBnxFo7CjGU",
+        name: "Feel-Good Hip Hop & R&B",
+        playlistId: "RDCLAK5uy_mkEwQuegHYB8_aAzBO8Q__6gGoaFblISw",
+        thumbVideoId: "SBnxFo7CjGU",
         bpm: "80–105 BPM",
         blurb: "modern R&B, smooth and rhythmic",
       },
       {
         id: "uplifting-soul",
-        name: "Motown Classics",
-        videoId: "cfsd2kpUM1k",
+        name: "100 Greatest Motown Songs",
+        playlistId: "PLC112C476FA02BD52",
+        thumbVideoId: "cfsd2kpUM1k",
         bpm: "90–115 BPM",
         blurb: "Stevie Wonder, The Supremes, Smokey Robinson",
       },
@@ -216,22 +237,25 @@ export const SEGMENTS: Segment[] = [
     genres: [
       {
         id: "rapcaviar",
-        name: "Hip Hop Beats Radio",
-        videoId: "v8e1yKTp7H4",
+        name: "Top 100 Hip-Hop & Rap",
+        playlistId: "PLSWCsoPtgnnbiu7esnhiBhBErrT8ZnzRm",
+        thumbVideoId: "v8e1yKTp7H4",
         bpm: "95–140 BPM",
         blurb: "the pulse of hip-hop and rap right now",
       },
       {
         id: "dance-classics",
-        name: "Funk & Disco Mix",
-        videoId: "9wVB91HkbF4",
+        name: "Disco & Funk",
+        playlistId: "PL28mQG-cZ6iNtSyQteRiPQCirxhrs6tH0",
+        thumbVideoId: "9wVB91HkbF4",
         bpm: "118–128 BPM",
         blurb: "ABBA, Bee Gees, Earth Wind & Fire — pure party energy",
       },
       {
         id: "tropical-house",
-        name: "Tropical House Radio",
-        videoId: "yBiyXnVxIwE",
+        name: "Tropical House 2026",
+        playlistId: "PLKsiRyayPqRL1EzG7OYVusPH7GQAWUG2S",
+        thumbVideoId: "yBiyXnVxIwE",
         bpm: "100–120 BPM",
         blurb: "warm house, built for a night out",
       },
@@ -250,29 +274,33 @@ export const SEGMENTS: Segment[] = [
     genres: [
       {
         id: "ambient-relaxation",
-        name: "Space Ambient",
-        videoId: "X7X3UDwyyqo",
+        name: "Ambient Sleeping Pill",
+        playlistId: "PLXFDRnlvEFW9cKu2WwZWmnGX3K14KrqCS",
+        thumbVideoId: "X7X3UDwyyqo",
         bpm: "<70 BPM",
         blurb: "atmospheric and weightless",
       },
       {
         id: "techno-bunker",
-        name: "Deep Techno",
-        videoId: "G-u5OhIeln4",
+        name: "Melodic Techno",
+        playlistId: "PLJJhuE0qsJfTYcH1kNzScnz59q4nfpmUT",
+        thumbVideoId: "G-u5OhIeln4",
         bpm: "120–135 BPM",
         blurb: "deep, dark, hypnotic techno",
       },
       {
         id: "dinner-with-friends",
-        name: "Cafe Jazz Lounge",
-        videoId: "psEr3_r9Yqw",
+        name: "Cafe Jazz & Bossa Nova",
+        playlistId: "PLfIAirCR-Hhav2v9hM_40vnjL6BnOiIG_",
+        thumbVideoId: "psEr3_r9Yqw",
         bpm: "80–105 BPM",
         blurb: "mellow jazzy-funk, low and easy",
       },
       {
         id: "top-50-global",
-        name: "Top Hits Mix",
-        videoId: "rPtxYOyAUKc",
+        name: "New Hits 2026",
+        playlistId: "PLp9rb04pybWK1uUdqxnJTHT8F2YwW6Bid",
+        thumbVideoId: "rPtxYOyAUKc",
         bpm: "varies",
         blurb: "the famous songs everyone already knows",
       },

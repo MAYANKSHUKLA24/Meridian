@@ -4,10 +4,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 type PlayerState = -1 | 0 | 1 | 2 | 3 | 5;
 
+export type StationSource = { playlistId?: string; videoId?: string };
+
 type YTPlayer = {
   playVideo: () => void;
   pauseVideo: () => void;
   loadVideoById: (videoId: string) => void;
+  loadPlaylist: (options: { listType: "playlist"; list: string; index?: number }) => void;
   seekTo: (seconds: number, allowSeekAhead: boolean) => void;
   getPlayerState: () => PlayerState;
   destroy: () => void;
@@ -19,7 +22,7 @@ type YTNamespace = {
     options: {
       height?: string | number;
       width?: string | number;
-      videoId: string;
+      videoId?: string;
       playerVars?: Record<string, number | string>;
       events?: {
         onReady?: (e: { target: YTPlayer }) => void;
@@ -39,6 +42,24 @@ declare global {
 }
 
 const SCRIPT_SRC = "https://www.youtube.com/iframe_api";
+const BASE_PLAYER_VARS = {
+  autoplay: 1,
+  controls: 0,
+  disablekb: 1,
+  fs: 0,
+  iv_load_policy: 3,
+  modestbranding: 1,
+  playsinline: 1,
+  rel: 0,
+  loop: 1,
+};
+
+// Kept conservatively low: an index beyond a playlist's actual track count
+// doesn't error or clamp — YouTube silently falls back to unrelated trending
+// content instead. Our smallest curated playlist has 11 tracks.
+function randomIndex(maxExclusive = 8) {
+  return Math.floor(Math.random() * maxExclusive);
+}
 
 function loadYoutubeApi(onReady: () => void) {
   if (typeof window === "undefined") return;
@@ -68,14 +89,16 @@ function loadYoutubeApi(onReady: () => void) {
 
 /**
  * Mounts one persistent YouTube player via the official IFrame Player API
- * (developers.google.com/youtube/iframe_api_reference). Unlike Spotify's
- * embed, full-length videos play for anyone with no login required, so the
- * player stays fully hidden — our own pill is the only visible UI. Each
- * "station" is a single long mix/livestream video that loops indefinitely.
+ * (developers.google.com/youtube/iframe_api_reference). Full-length videos
+ * play for anyone with no login required, so the player stays fully hidden —
+ * our own pill is the only visible UI. Stations backed by a real playlist
+ * start at a random track (not always track 1) so switching genres — or
+ * coming back to one later — doesn't keep replaying the same song.
  */
-export function useYoutubeEmbed(initialVideoId: string) {
+export function useYoutubeEmbed(initialSource: StationSource) {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const playerRef = useRef<YTPlayer | null>(null);
+  const modeRef = useRef<"playlist" | "video">(initialSource.playlistId ? "playlist" : "video");
   const [ready, setReady] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [apiUnavailable, setApiUnavailable] = useState(false);
@@ -91,18 +114,12 @@ export function useYoutubeEmbed(initialVideoId: string) {
       const player = new window.YT.Player(mountRef.current, {
         height: "1",
         width: "1",
-        videoId: initialVideoId,
+        ...(initialSource.playlistId ? {} : { videoId: initialSource.videoId }),
         playerVars: {
-          autoplay: 1,
-          controls: 0,
-          disablekb: 1,
-          fs: 0,
-          iv_load_policy: 3,
-          modestbranding: 1,
-          playsinline: 1,
-          rel: 0,
-          loop: 1,
-          playlist: initialVideoId,
+          ...BASE_PLAYER_VARS,
+          ...(initialSource.playlistId
+            ? { listType: "playlist", list: initialSource.playlistId, index: randomIndex() }
+            : { playlist: initialSource.videoId ?? "" }),
         },
         events: {
           onReady: () => {
@@ -113,8 +130,9 @@ export function useYoutubeEmbed(initialVideoId: string) {
           },
           onStateChange: (e) => {
             setIsPlaying(e.data === 1);
-            if (e.data === 0) {
-              // a station should never "run out" — loop whatever's loaded
+            // Playlists loop natively via the `loop` playerVar; a lone video
+            // needs a manual nudge so a station never just stops.
+            if (e.data === 0 && modeRef.current === "video") {
               player.seekTo(0, true);
               player.playVideo();
             }
@@ -133,8 +151,16 @@ export function useYoutubeEmbed(initialVideoId: string) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loadVideo = useCallback((videoId: string) => {
-    playerRef.current?.loadVideoById(videoId);
+  const loadStation = useCallback((source: StationSource) => {
+    const player = playerRef.current;
+    if (!player) return;
+    if (source.playlistId) {
+      modeRef.current = "playlist";
+      player.loadPlaylist({ listType: "playlist", list: source.playlistId, index: randomIndex() });
+    } else if (source.videoId) {
+      modeRef.current = "video";
+      player.loadVideoById(source.videoId);
+    }
     setIsPlaying(true);
   }, []);
 
@@ -148,5 +174,5 @@ export function useYoutubeEmbed(initialVideoId: string) {
     }
   }, []);
 
-  return { mountRef, ready, isPlaying, apiUnavailable, loadVideo, togglePlay };
+  return { mountRef, ready, isPlaying, apiUnavailable, loadStation, togglePlay };
 }

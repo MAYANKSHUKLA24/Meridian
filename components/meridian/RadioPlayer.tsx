@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type RefObject } from "react";
-import { youtubeThumbnail, youtubeWatchUrl, type Genre, type Segment } from "@/lib/meridian/segments";
+import { youtubeThumbnail, youtubeOpenUrl, type Genre, type Segment } from "@/lib/meridian/segments";
 
 export function RadioPlayer({
   segment,
@@ -24,12 +24,12 @@ export function RadioPlayer({
   onPrevGenre: () => void;
   onNextGenre: () => void;
 }) {
-  const [artState, setArtState] = useState({ videoId: genre.videoId, missing: false });
-  if (artState.videoId !== genre.videoId) {
-    setArtState({ videoId: genre.videoId, missing: false });
+  const [artState, setArtState] = useState({ genreId: genre.id, missing: false });
+  if (artState.genreId !== genre.id) {
+    setArtState({ genreId: genre.id, missing: false });
   }
   const artMissing = artState.missing;
-  const setArtMissing = () => setArtState({ videoId: genre.videoId, missing: true });
+  const setArtMissing = () => setArtState({ genreId: genre.id, missing: true });
 
   return (
     <div className="relative w-full max-w-sm rounded-[28px] bg-black/35 backdrop-blur-xl ring-1 ring-white/15 px-4 py-3.5 shadow-2xl shadow-black/40">
@@ -51,7 +51,7 @@ export function RadioPlayer({
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={youtubeThumbnail(genre.videoId)}
+              src={youtubeThumbnail(genre.thumbVideoId)}
               alt=""
               className="h-12 w-12 rounded-full object-cover ring-1 ring-white/20"
               onError={() => setArtMissing()}
@@ -116,7 +116,7 @@ export function RadioPlayer({
           Player unavailable —{" "}
           <a
             className="underline hover:text-white"
-            href={youtubeWatchUrl(genre.videoId)}
+            href={youtubeOpenUrl(genre)}
             target="_blank"
             rel="noopener noreferrer"
           >

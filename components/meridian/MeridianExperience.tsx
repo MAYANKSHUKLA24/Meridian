@@ -40,18 +40,18 @@ export function MeridianExperience() {
   const genreIndex = (genreIndexBySegment[segment.id] ?? 0) % genres.length;
   const genre = genres[genreIndex];
 
-  const [initialVideoId] = useState(
-    () => SEGMENTS[getSegmentIndexForHour(liveHour)].genres[0].videoId,
-  );
-  const { mountRef, ready, isPlaying, apiUnavailable, loadVideo, togglePlay } =
-    useYoutubeEmbed(initialVideoId);
+  const [initialStation] = useState(() => {
+    const first = SEGMENTS[getSegmentIndexForHour(liveHour)].genres[0];
+    return { id: first.id, playlistId: first.playlistId, videoId: first.videoId };
+  });
+  const { mountRef, ready, isPlaying, apiUnavailable, loadStation, togglePlay } = useYoutubeEmbed(initialStation);
 
-  const loadedVideoRef = useRef(initialVideoId);
+  const loadedGenreRef = useRef(initialStation.id);
   useEffect(() => {
-    if (!ready || genre.videoId === loadedVideoRef.current) return;
-    loadedVideoRef.current = genre.videoId;
-    loadVideo(genre.videoId);
-  }, [genre.videoId, ready, loadVideo]);
+    if (!ready || genre.id === loadedGenreRef.current) return;
+    loadedGenreRef.current = genre.id;
+    loadStation({ playlistId: genre.playlistId, videoId: genre.videoId });
+  }, [genre.id, genre.playlistId, genre.videoId, ready, loadStation]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
