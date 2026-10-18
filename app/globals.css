@@ -168,13 +168,3 @@
 .meridian-spin-glow {
   filter: drop-shadow(0 0 18px var(--spin-glow, rgba(255, 255, 255, 0.35)));
 }
-
-@keyframes meridian-walk {
-  from { transform: translateX(-12vw); }
-  to { transform: translateX(112vw); }
-}
-
-@keyframes meridian-walk-reverse {
-  from { transform: translateX(112vw); }
-  to { transform: translateX(-12vw); }
-}

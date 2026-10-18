@@ -9,7 +9,6 @@ import { CITY_OPTIONS } from "@/lib/meridian/timezones";
 import { Background } from "./Background";
 import { CelestialArc } from "./CelestialArc";
 import { Particles } from "./Particles";
-import { SceneLife } from "./SceneLife";
 import { Horizon } from "./Horizon";
 import { Timeline } from "./Timeline";
 import { TimeJumpButtons } from "./TimeJumpButtons";
@@ -97,7 +96,6 @@ export function MeridianExperience() {
       <Background segment={segment} />
       <CelestialArc hour={displayHour} />
       <Particles config={segment.particles} />
-      <SceneLife segmentId={segment.id} color="#0b0710" />
       <Horizon segment={segment} />
 
       <div className="relative z-10 flex h-full w-full flex-col overflow-y-auto">
