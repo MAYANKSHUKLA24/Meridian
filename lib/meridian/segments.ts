@@ -1,5 +1,4 @@
 export type ParticleType = "birds" | "bokeh" | "embers" | "haze" | "neon" | "stars";
-export type HorizonType = "mountains" | "skyline";
 
 export type Genre = {
   id: string;
@@ -35,7 +34,6 @@ export type Segment = {
     speed: number;
     colors: string[];
   };
-  horizon: HorizonType;
   genres: Genre[];
 };
 
@@ -72,7 +70,6 @@ export const SEGMENTS: Segment[] = [
     glow: "#ffd9b0",
     pulseSeconds: 6,
     particles: { type: "birds", density: 7, speed: 0.4, colors: ["#2a2440", "#3a3160"] },
-    horizon: "mountains",
     genres: [
       {
         id: "peaceful-piano",
@@ -107,7 +104,6 @@ export const SEGMENTS: Segment[] = [
     glow: "#fff1c2",
     pulseSeconds: 4.5,
     particles: { type: "bokeh", density: 18, speed: 0.5, colors: ["#ffffff", "#ffe9b0", "#bfe8ff"] },
-    horizon: "mountains",
     genres: [
       {
         id: "indie-top-50",
@@ -142,7 +138,6 @@ export const SEGMENTS: Segment[] = [
     glow: "#ffe08a",
     pulseSeconds: 2.2,
     particles: { type: "embers", density: 26, speed: 1.1, colors: ["#fff2cc", "#ffb347", "#ff6b6b"] },
-    horizon: "mountains",
     genres: [
       {
         id: "todays-top-hits",
@@ -184,7 +179,6 @@ export const SEGMENTS: Segment[] = [
     glow: "#ff9d6c",
     pulseSeconds: 4,
     particles: { type: "haze", density: 14, speed: 0.35, colors: ["#ffd9a0", "#ff9d9d", "#d9a0ff"] },
-    horizon: "mountains",
     genres: [
       {
         id: "jazz-classics",
@@ -219,7 +213,6 @@ export const SEGMENTS: Segment[] = [
     glow: "#c86bff",
     pulseSeconds: 2.8,
     particles: { type: "neon", density: 22, speed: 0.8, colors: ["#ff3b7f", "#8a5cff", "#36e2ff"] },
-    horizon: "skyline",
     genres: [
       {
         id: "rapcaviar",
@@ -254,7 +247,6 @@ export const SEGMENTS: Segment[] = [
     glow: "#9db4ff",
     pulseSeconds: 7,
     particles: { type: "stars", density: 60, speed: 0.1, colors: ["#ffffff", "#cfe0ff", "#9db4ff"] },
-    horizon: "mountains",
     genres: [
       {
         id: "ambient-relaxation",
