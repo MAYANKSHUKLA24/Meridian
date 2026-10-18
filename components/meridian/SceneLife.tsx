@@ -14,18 +14,18 @@ type Actor = {
 const SCENES: Record<string, Actor[]> = {
   earlyMorning: [],
   morning: [
-    { variant: "dogwalker", duration: 30, delay: -6, bottom: "9vh", scale: 1 },
-    { variant: "walker", duration: 20, delay: -2, bottom: "7vh", scale: 0.85 },
-    { variant: "walker", duration: 24, delay: -14, bottom: "11vh", scale: 0.9, reverse: true },
+    { variant: "dogwalker", duration: 30, delay: -6, bottom: "1.5vh", scale: 1 },
+    { variant: "walker", duration: 20, delay: -2, bottom: "0.5vh", scale: 0.85 },
+    { variant: "walker", duration: 24, delay: -14, bottom: "2vh", scale: 0.9, reverse: true },
   ],
   afternoon: [
-    { variant: "jogger", duration: 15, delay: -4, bottom: "8vh", scale: 0.95 },
-    { variant: "cyclist", duration: 13, delay: -9, bottom: "6vh", scale: 1 },
+    { variant: "jogger", duration: 15, delay: -4, bottom: "1vh", scale: 0.95 },
+    { variant: "cyclist", duration: 13, delay: -9, bottom: "0.5vh", scale: 1 },
   ],
-  goldenHour: [{ variant: "couple", duration: 28, delay: -10, bottom: "8vh", scale: 1 }],
+  goldenHour: [{ variant: "couple", duration: 28, delay: -10, bottom: "1vh", scale: 1 }],
   evening: [
-    { variant: "walker", duration: 18, delay: -3, bottom: "7vh", scale: 0.9 },
-    { variant: "couple", duration: 22, delay: -12, bottom: "10vh", scale: 0.95, reverse: true },
+    { variant: "walker", duration: 18, delay: -3, bottom: "0.5vh", scale: 0.9 },
+    { variant: "couple", duration: 22, delay: -12, bottom: "1.5vh", scale: 0.95, reverse: true },
   ],
   lateNight: [],
 };

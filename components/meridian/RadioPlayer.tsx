@@ -1,6 +1,6 @@
 "use client";
 
-import type { RefObject } from "react";
+import { useState, type RefObject } from "react";
 import { youtubeThumbnail, youtubeWatchUrl, type Genre, type Segment } from "@/lib/meridian/segments";
 
 export function RadioPlayer({
@@ -24,6 +24,13 @@ export function RadioPlayer({
   onPrevGenre: () => void;
   onNextGenre: () => void;
 }) {
+  const [artState, setArtState] = useState({ videoId: genre.videoId, missing: false });
+  if (artState.videoId !== genre.videoId) {
+    setArtState({ videoId: genre.videoId, missing: false });
+  }
+  const artMissing = artState.missing;
+  const setArtMissing = () => setArtState({ videoId: genre.videoId, missing: true });
+
   return (
     <div className="relative w-full max-w-sm rounded-[28px] bg-black/35 backdrop-blur-xl ring-1 ring-white/15 px-4 py-3.5 shadow-2xl shadow-black/40">
       {/* Headless YouTube player — drives real, full-length playback. No login
@@ -34,12 +41,28 @@ export function RadioPlayer({
 
       <div className="flex items-center gap-3">
         <div className="relative shrink-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={youtubeThumbnail(genre.videoId)}
-            alt=""
-            className="h-12 w-12 rounded-full object-cover ring-1 ring-white/20"
-          />
+          {artMissing ? (
+            <div
+              className="flex h-12 w-12 items-center justify-center rounded-full text-lg ring-1 ring-white/20"
+              style={{ backgroundColor: segment.accent }}
+            >
+              📻
+            </div>
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={youtubeThumbnail(genre.videoId)}
+              alt=""
+              className="h-12 w-12 rounded-full object-cover ring-1 ring-white/20"
+              onError={() => setArtMissing()}
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                // YouTube silently returns a generic 120×90 placeholder for
+                // videos with no real thumbnail, instead of erroring
+                if (img.naturalWidth === 120 && img.naturalHeight === 90) setArtMissing();
+              }}
+            />
+          )}
           {isPlaying && (
             <span
               className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ring-2 ring-black/40 animate-pulse"
